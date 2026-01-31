@@ -125,3 +125,84 @@ export async function getAllRetention(): Promise<RetentionRisk[]> {
   
   return response.json();
 }
+
+// Scenario 1: Capability Gap Types
+export interface CapabilityGapInput {
+  skill: string;
+  gapCount: number;
+  urgency: 'immediate' | '1-3m' | '3-6m';
+  internalAvailability: 'low' | 'medium' | 'high';
+  budget: 'low' | 'medium' | 'high';
+}
+
+export interface OptionScore {
+  option: string;
+  score: number;
+  pros: string[];
+  cons: string[];
+  estimatedTimelineWeeks: number;
+}
+
+export interface CapabilityGapResult {
+  recommendedOption: string;
+  confidence: number;
+  reasons: string[];
+  optionScores: OptionScore[];
+  nextSteps: string[];
+}
+
+// Scenario 2: Expectation Balance Types
+export interface ExpectationBalanceInput {
+  candidateLevel: 'junior' | 'mid' | 'senior';
+  compExpectation: 'low' | 'medium' | 'high';
+  promotionExpectation: 'fast' | 'normal';
+  roleCriticality: 'low' | 'medium' | 'high';
+  orgStabilityNeed: 'low' | 'medium' | 'high';
+}
+
+export interface OfferGuidance {
+  compBand: 'low' | 'medium' | 'high';
+  equityOrBonus: 'none' | 'small' | 'strong';
+  growthPath: string;
+  workImpactPlan: string;
+}
+
+export interface ExpectationBalanceResult {
+  recommendedStrategy: string;
+  offerGuidance: OfferGuidance;
+  riskFlags: string[];
+  reasons: string[];
+  retentionLevers: string[];
+}
+
+// Scenario 1: Evaluate Capability Gap
+export async function evaluateCapabilityGap(input: CapabilityGapInput): Promise<CapabilityGapResult> {
+  const response = await fetch(`${API_BASE}/scenario/capability-gap`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.messages?.join(', ') || error.message || 'Failed to evaluate capability gap');
+  }
+  
+  return response.json();
+}
+
+// Scenario 2: Evaluate Expectation Balance
+export async function evaluateExpectationBalance(input: ExpectationBalanceInput): Promise<ExpectationBalanceResult> {
+  const response = await fetch(`${API_BASE}/scenario/expectation-balance`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.messages?.join(', ') || error.message || 'Failed to evaluate expectation balance');
+  }
+  
+  return response.json();
+}

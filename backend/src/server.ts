@@ -5,6 +5,8 @@ import demoRoutes from './routes/demo';
 import employeesRoutes from './routes/employees';
 import matchRoutes from './routes/match';
 import retentionRoutes from './routes/retention';
+import capabilityRoutes from './routes/capability';
+import expectationsRoutes from './routes/expectations';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -29,6 +31,8 @@ app.use('/demo', demoRoutes);
 app.use('/employees', employeesRoutes);
 app.use('/match', matchRoutes);
 app.use('/retention', retentionRoutes);
+app.use('/scenario', capabilityRoutes);
+app.use('/scenario', expectationsRoutes);
 
 // Health check
 app.get('/health', (_req, res) => {
@@ -48,6 +52,8 @@ app.get('/', (_req, res) => {
       'GET /match?query=...': 'Match candidates by skills',
       'GET /retention/:employeeId': 'Get retention risk for employee',
       'GET /retention': 'Get retention risk for all employees',
+      'POST /scenario/capability-gap': 'Evaluate capability gap sourcing strategy',
+      'POST /scenario/expectation-balance': 'Evaluate candidate expectation balance',
       'GET /health': 'Health check',
     },
   });
@@ -76,10 +82,12 @@ app.listen(PORT, () => {
 🚀 Talent API Server running at http://localhost:${PORT}
 
 Available endpoints:
-  POST /demo/load        - Load demo data
-  GET  /employees        - List employees
-  GET  /match?query=...  - Match candidates
-  GET  /retention/:id    - Get retention risk
+  POST /demo/load              - Load demo data
+  GET  /employees              - List employees
+  GET  /match?query=...        - Match candidates
+  GET  /retention/:id          - Get retention risk
+  POST /scenario/capability-gap       - Scenario 1: Capability gap
+  POST /scenario/expectation-balance  - Scenario 2: Expectation balance
 
 Frontend should run at http://localhost:5173
   `);
