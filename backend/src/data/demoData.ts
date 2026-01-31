@@ -1,0 +1,228 @@
+import { Employee, Candidate, Job } from '../store/memoryStore';
+
+// Demo employees with variety for retention risk testing
+export const demoEmployees: Employee[] = [
+  {
+    id: 'e1',
+    name: 'Person A',
+    role: 'Senior Software Engineer',
+    skills: ['javascript', 'typescript', 'react', 'node', 'aws'],
+    tenureMonths: 36,
+    performanceScore: 4.2,
+    promotionsCount: 0, // High risk: long tenure, no promotion
+    lastRoleChangeMonths: 36,
+    salaryBand: 'medium',
+  },
+  {
+    id: 'e2',
+    name: 'Person B',
+    role: 'Product Manager',
+    skills: ['product strategy', 'agile', 'analytics', 'stakeholder management'],
+    tenureMonths: 18,
+    performanceScore: 4.5,
+    promotionsCount: 1,
+    lastRoleChangeMonths: 12,
+    salaryBand: 'high',
+  },
+  {
+    id: 'e3',
+    name: 'Person C',
+    role: 'Junior Developer',
+    skills: ['python', 'django', 'sql'],
+    tenureMonths: 8,
+    performanceScore: 2.1, // Low performance risk
+    promotionsCount: 0,
+    lastRoleChangeMonths: 8,
+    salaryBand: 'low', // Low salary risk
+  },
+  {
+    id: 'e4',
+    name: 'Person D',
+    role: 'Data Scientist',
+    skills: ['python', 'machine learning', 'tensorflow', 'sql', 'statistics'],
+    tenureMonths: 30,
+    performanceScore: 3.8,
+    promotionsCount: 0, // Risk: tenure > 24, no promotion
+    lastRoleChangeMonths: 24,
+    salaryBand: 'medium',
+  },
+  {
+    id: 'e5',
+    name: 'Person E',
+    role: 'DevOps Engineer',
+    skills: ['kubernetes', 'docker', 'terraform', 'aws', 'ci/cd'],
+    tenureMonths: 12,
+    performanceScore: 4.0,
+    promotionsCount: 0,
+    lastRoleChangeMonths: 12,
+    salaryBand: 'high',
+  },
+  {
+    id: 'e6',
+    name: 'Person F',
+    role: 'UX Designer',
+    skills: ['figma', 'user research', 'prototyping', 'design systems'],
+    tenureMonths: 42,
+    performanceScore: 2.3, // Multiple risks
+    promotionsCount: 0,
+    lastRoleChangeMonths: 42,
+    salaryBand: 'low',
+  },
+  {
+    id: 'e7',
+    name: 'Person G',
+    role: 'Engineering Manager',
+    skills: ['leadership', 'agile', 'javascript', 'system design'],
+    tenureMonths: 24,
+    performanceScore: 4.8,
+    promotionsCount: 2,
+    lastRoleChangeMonths: 6,
+    salaryBand: 'high',
+  },
+  {
+    id: 'e8',
+    name: 'Person H',
+    role: 'Backend Developer',
+    skills: ['java', 'spring', 'postgresql', 'microservices'],
+    tenureMonths: 28,
+    performanceScore: 3.5,
+    promotionsCount: 1,
+    lastRoleChangeMonths: 20,
+    salaryBand: 'medium',
+  },
+  {
+    id: 'e9',
+    name: 'Person I',
+    role: 'QA Engineer',
+    skills: ['selenium', 'cypress', 'test automation', 'api testing'],
+    tenureMonths: 15,
+    performanceScore: 3.2,
+    promotionsCount: 0,
+    lastRoleChangeMonths: 15,
+    salaryBand: 'low', // Salary risk
+  },
+  {
+    id: 'e10',
+    name: 'Person J',
+    role: 'Frontend Developer',
+    skills: ['react', 'typescript', 'css', 'nextjs', 'graphql'],
+    tenureMonths: 6,
+    performanceScore: 4.1,
+    promotionsCount: 0,
+    lastRoleChangeMonths: 6,
+    salaryBand: 'medium',
+  },
+];
+
+// Demo candidates for skill matching
+export const demoCandidates: Candidate[] = [
+  {
+    id: 'c1',
+    name: 'Candidate Alpha',
+    role: 'Frontend Developer',
+    skills: ['react', 'typescript', 'css', 'html', 'javascript'],
+    experienceYears: 4,
+  },
+  {
+    id: 'c2',
+    name: 'Candidate Beta',
+    role: 'Full Stack Developer',
+    skills: ['react', 'node', 'typescript', 'mongodb', 'express'],
+    experienceYears: 5,
+  },
+  {
+    id: 'c3',
+    name: 'Candidate Gamma',
+    role: 'Backend Developer',
+    skills: ['python', 'django', 'postgresql', 'redis', 'docker'],
+    experienceYears: 6,
+  },
+  {
+    id: 'c4',
+    name: 'Candidate Delta',
+    role: 'Data Engineer',
+    skills: ['python', 'spark', 'sql', 'airflow', 'aws'],
+    experienceYears: 4,
+  },
+  {
+    id: 'c5',
+    name: 'Candidate Epsilon',
+    role: 'DevOps Engineer',
+    skills: ['kubernetes', 'terraform', 'aws', 'docker', 'ci/cd'],
+    experienceYears: 3,
+  },
+  {
+    id: 'c6',
+    name: 'Candidate Zeta',
+    role: 'Mobile Developer',
+    skills: ['react native', 'typescript', 'ios', 'android', 'javascript'],
+    experienceYears: 4,
+  },
+  {
+    id: 'c7',
+    name: 'Candidate Eta',
+    role: 'ML Engineer',
+    skills: ['python', 'tensorflow', 'pytorch', 'machine learning', 'sql'],
+    experienceYears: 5,
+  },
+  {
+    id: 'c8',
+    name: 'Candidate Theta',
+    role: 'Cloud Architect',
+    skills: ['aws', 'azure', 'terraform', 'kubernetes', 'networking'],
+    experienceYears: 8,
+  },
+  {
+    id: 'c9',
+    name: 'Candidate Iota',
+    role: 'Junior Developer',
+    skills: ['javascript', 'html', 'css', 'react', 'git'],
+    experienceYears: 1,
+  },
+  {
+    id: 'c10',
+    name: 'Candidate Kappa',
+    role: 'Senior Backend Developer',
+    skills: ['java', 'spring', 'microservices', 'kafka', 'postgresql'],
+    experienceYears: 7,
+  },
+];
+
+// Demo jobs
+export const demoJobs: Job[] = [
+  {
+    id: 'j1',
+    title: 'Senior Frontend Engineer',
+    department: 'Engineering',
+    requiredSkills: ['react', 'typescript', 'css', 'testing'],
+    level: 'senior',
+  },
+  {
+    id: 'j2',
+    title: 'Backend Developer',
+    department: 'Engineering',
+    requiredSkills: ['python', 'django', 'postgresql', 'api design'],
+    level: 'mid',
+  },
+  {
+    id: 'j3',
+    title: 'Data Scientist',
+    department: 'Data',
+    requiredSkills: ['python', 'machine learning', 'sql', 'statistics'],
+    level: 'mid',
+  },
+  {
+    id: 'j4',
+    title: 'DevOps Engineer',
+    department: 'Infrastructure',
+    requiredSkills: ['kubernetes', 'docker', 'terraform', 'aws'],
+    level: 'mid',
+  },
+  {
+    id: 'j5',
+    title: 'Junior Software Engineer',
+    department: 'Engineering',
+    requiredSkills: ['javascript', 'html', 'css', 'git'],
+    level: 'junior',
+  },
+];
