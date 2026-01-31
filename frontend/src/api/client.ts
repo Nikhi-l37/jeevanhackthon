@@ -1,4 +1,5 @@
-const API_BASE = 'http://localhost:4000';
+// Use relative URL in production, localhost in development
+const API_BASE = import.meta.env.PROD ? '' : 'http://localhost:4000';
 
 // Types
 export interface Employee {

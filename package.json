@@ -1,0 +1,21 @@
+{
+  "name": "talent-acquisition-retention",
+  "version": "1.0.0",
+  "description": "Advanced Digital Talent Acquisition and Retention Experience - Hackathon Prototype",
+  "scripts": {
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build": "npm run install:all && npm run build:backend && npm run build:frontend && cp -r frontend/dist backend/dist/public",
+    "start": "cd backend && npm start",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["hackathon", "talent", "acquisition", "retention", "hr"],
+  "license": "MIT"
+}

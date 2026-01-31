@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
 
 import demoRoutes from './routes/demo';
 import employeesRoutes from './routes/employees';
@@ -10,10 +11,11 @@ import expectationsRoutes from './routes/expectations';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+const isProduction = process.env.NODE_ENV === 'production';
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: isProduction ? true : 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
@@ -39,25 +41,47 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Root endpoint
-app.get('/', (_req, res) => {
-  res.json({
-    name: 'Talent Acquisition & Retention API',
-    version: '1.0.0',
-    endpoints: {
-      'POST /demo/load': 'Load demo data',
-      'GET /demo/status': 'Check if demo data is loaded',
-      'GET /employees': 'List all employees',
-      'GET /employees/:id': 'Get employee by ID',
-      'GET /match?query=...': 'Match candidates by skills',
-      'GET /retention/:employeeId': 'Get retention risk for employee',
-      'GET /retention': 'Get retention risk for all employees',
-      'POST /scenario/capability-gap': 'Evaluate capability gap sourcing strategy',
-      'POST /scenario/expectation-balance': 'Evaluate candidate expectation balance',
-      'GET /health': 'Health check',
-    },
+// Serve frontend in production
+if (isProduction) {
+  const publicPath = path.join(__dirname, 'public');
+  app.use(express.static(publicPath));
+  
+  // Serve index.html for all non-API routes (SPA support)
+  app.get('*', (req, res, next) => {
+    // Skip API routes
+    if (req.path.startsWith('/demo') || 
+        req.path.startsWith('/employees') || 
+        req.path.startsWith('/match') || 
+        req.path.startsWith('/retention') || 
+        req.path.startsWith('/scenario') ||
+        req.path.startsWith('/health')) {
+      return next();
+    }
+    res.sendFile(path.join(publicPath, 'index.html'));
   });
-});
+}
+
+// Root endpoint (only in development)
+if (!isProduction) {
+  app.get('/', (_req, res) => {
+    res.json({
+      name: 'Talent Acquisition & Retention API',
+      version: '1.0.0',
+      endpoints: {
+        'POST /demo/load': 'Load demo data',
+        'GET /demo/status': 'Check if demo data is loaded',
+        'GET /employees': 'List all employees',
+        'GET /employees/:id': 'Get employee by ID',
+        'GET /match?query=...': 'Match candidates by skills',
+        'GET /retention/:employeeId': 'Get retention risk for employee',
+        'GET /retention': 'Get retention risk for all employees',
+        'POST /scenario/capability-gap': 'Evaluate capability gap sourcing strategy',
+        'POST /scenario/expectation-balance': 'Evaluate candidate expectation balance',
+        'GET /health': 'Health check',
+      },
+    });
+  });
+}
 
 // 404 handler
 app.use((_req, res) => {
