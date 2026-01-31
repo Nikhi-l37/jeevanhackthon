@@ -1,6 +1,22 @@
 // Use relative URL in production, localhost in development
 const API_BASE = import.meta.env.PROD ? '' : 'http://localhost:4000';
 
+// Custom error class for API errors
+export class ApiError extends Error {
+  code: string;
+  
+  constructor(message: string, code: string = 'UNKNOWN_ERROR') {
+    super(message);
+    this.code = code;
+    this.name = 'ApiError';
+  }
+}
+
+// Helper to detect DEMO_DATA_NOT_LOADED error
+export function isDemoDataNotLoaded(error: unknown): boolean {
+  return error instanceof ApiError && error.code === 'DEMO_DATA_NOT_LOADED';
+}
+
 // Types
 export interface Employee {
   id: string;
@@ -86,7 +102,7 @@ export async function getEmployees(): Promise<Employee[]> {
   
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || 'Failed to fetch employees');
+    throw new ApiError(error.message || 'Failed to fetch employees', error.error || 'UNKNOWN_ERROR');
   }
   
   return response.json();
@@ -99,7 +115,7 @@ export async function matchCandidates(query: string): Promise<MatchResponse> {
   
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || 'Failed to match candidates');
+    throw new ApiError(error.message || 'Failed to match candidates', error.error || 'UNKNOWN_ERROR');
   }
   
   return response.json();
@@ -110,7 +126,7 @@ export async function getRetention(employeeId: string): Promise<RetentionRisk> {
   
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || 'Failed to fetch retention data');
+    throw new ApiError(error.message || 'Failed to fetch retention data', error.error || 'UNKNOWN_ERROR');
   }
   
   return response.json();
@@ -121,7 +137,7 @@ export async function getAllRetention(): Promise<RetentionRisk[]> {
   
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || 'Failed to fetch retention data');
+    throw new ApiError(error.message || 'Failed to fetch retention data', error.error || 'UNKNOWN_ERROR');
   }
   
   return response.json();

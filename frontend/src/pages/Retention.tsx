@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { getEmployees, getRetention, Employee, RetentionRisk } from '../api/client';
+import { getEmployees, getRetention, Employee, RetentionRisk, isDemoDataNotLoaded } from '../api/client';
 import EmployeeCard from '../components/EmployeeCard';
 import RiskCard from '../components/RiskCard';
+import DemoDataBanner from '../components/DemoDataBanner';
 
 function Retention() {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -10,6 +11,7 @@ function Retention() {
   const [loading, setLoading] = useState(true);
   const [riskLoading, setRiskLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [needsDemoData, setNeedsDemoData] = useState(false);
 
   useEffect(() => {
     fetchEmployees();
@@ -18,12 +20,17 @@ function Retention() {
   const fetchEmployees = async () => {
     setLoading(true);
     setError(null);
+    setNeedsDemoData(false);
     
     try {
       const data = await getEmployees();
       setEmployees(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch employees');
+      if (isDemoDataNotLoaded(err)) {
+        setNeedsDemoData(true);
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to fetch employees');
+      }
     } finally {
       setLoading(false);
     }
@@ -61,15 +68,21 @@ function Retention() {
     );
   }
 
+  if (needsDemoData) {
+    return (
+      <div className="retention-page">
+        <h2>📊 Retention Analysis</h2>
+        <DemoDataBanner onLoaded={fetchEmployees} />
+      </div>
+    );
+  }
+
   if (error) {
     return (
       <div className="retention-page">
         <h2>📊 Retention Analysis</h2>
         <div className="card error-card">
           <p className="error">{error}</p>
-          {error.includes('Demo data not loaded') && (
-            <p>Please go to Dashboard and click "Load Demo Data" first.</p>
-          )}
         </div>
       </div>
     );

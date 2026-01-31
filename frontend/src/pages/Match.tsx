@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { matchCandidates, MatchResult } from '../api/client';
+import { matchCandidates, MatchResult, isDemoDataNotLoaded } from '../api/client';
 import CandidateCard from '../components/CandidateCard';
+import DemoDataBanner from '../components/DemoDataBanner';
 
 function Match() {
   const [query, setQuery] = useState('');
@@ -9,28 +10,47 @@ function Match() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [needsDemoData, setNeedsDemoData] = useState(false);
+  const [lastQuery, setLastQuery] = useState('');
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSearch = async (e?: React.FormEvent, searchQuery?: string) => {
+    if (e) e.preventDefault();
     
-    if (!query.trim()) {
+    const queryToUse = searchQuery || query;
+    
+    if (!queryToUse.trim()) {
       setError('Please enter skills to search');
       return;
     }
 
     setLoading(true);
     setError(null);
+    setNeedsDemoData(false);
+    setLastQuery(queryToUse);
     
     try {
-      const response = await matchCandidates(query);
+      const response = await matchCandidates(queryToUse);
       setResults(response.results);
       setSearchedQuery(response.query);
       setHasSearched(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Search failed');
+      if (isDemoDataNotLoaded(err)) {
+        setNeedsDemoData(true);
+      } else {
+        setError(err instanceof Error ? err.message : 'Search failed');
+      }
       setResults([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDemoLoaded = () => {
+    // Re-run the last search after demo data is loaded
+    if (lastQuery) {
+      handleSearch(undefined, lastQuery);
+    } else {
+      setNeedsDemoData(false);
     }
   };
 
@@ -48,6 +68,10 @@ function Match() {
       <p className="subtitle">
         Search candidates by skills. Scoring is based on skill overlap percentage.
       </p>
+
+      {needsDemoData && (
+        <DemoDataBanner onLoaded={handleDemoLoaded} />
+      )}
 
       <div className="card search-card">
         <form onSubmit={handleSearch}>
@@ -82,9 +106,6 @@ function Match() {
       {error && (
         <div className="card error-card">
           <p className="error">{error}</p>
-          {error.includes('Demo data not loaded') && (
-            <p>Please go to Dashboard and click "Load Demo Data" first.</p>
-          )}
         </div>
       )}
 

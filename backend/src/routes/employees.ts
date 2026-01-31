@@ -10,8 +10,9 @@ const router = Router();
 router.get('/', (_req: Request, res: Response) => {
   if (!isLoaded()) {
     res.status(400).json({
-      error: 'Demo data not loaded',
-      message: 'Please call POST /demo/load first to load demo data',
+      ok: false,
+      error: 'DEMO_DATA_NOT_LOADED',
+      message: 'Demo data not loaded',
     });
     return;
   }
@@ -41,8 +42,9 @@ router.get('/', (_req: Request, res: Response) => {
 router.get('/:id', (req: Request, res: Response) => {
   if (!isLoaded()) {
     res.status(400).json({
-      error: 'Demo data not loaded',
-      message: 'Please call POST /demo/load first to load demo data',
+      ok: false,
+      error: 'DEMO_DATA_NOT_LOADED',
+      message: 'Demo data not loaded',
     });
     return;
   }
