@@ -5,6 +5,8 @@ import Match from './pages/Match';
 import Retention from './pages/Retention';
 import CapabilityGap from './pages/CapabilityGap';
 import ExpectationBalance from './pages/ExpectationBalance';
+import EarlyRisk from './pages/EarlyRisk';
+import Allocation from './pages/Allocation';
 import { loadDemo } from './api/client';
 
 function App() {
@@ -33,8 +35,10 @@ function App() {
             <Link to="/">Dashboard</Link>
             <Link to="/match">Match</Link>
             <Link to="/retention">Retention</Link>
-            <Link to="/capability-gap">Capability Gap</Link>
-            <Link to="/expectation-balance">Expectation Balance</Link>
+            <Link to="/capability-gap">Scenario 1</Link>
+            <Link to="/expectation-balance">Scenario 2</Link>
+            <Link to="/early-risk">Scenario 3</Link>
+            <Link to="/allocation">Scenario 4</Link>
             <button 
               onClick={handleLoadDemo} 
               disabled={demoLoading}
@@ -51,6 +55,8 @@ function App() {
             <Route path="/retention" element={<Retention />} />
             <Route path="/capability-gap" element={<CapabilityGap />} />
             <Route path="/expectation-balance" element={<ExpectationBalance />} />
+            <Route path="/early-risk" element={<EarlyRisk />} />
+            <Route path="/allocation" element={<Allocation />} />
           </Routes>
         </main>
         <footer className="footer">

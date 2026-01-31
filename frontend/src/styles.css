@@ -971,3 +971,340 @@ body {
   margin-bottom: 0.25rem;
 }
 
+/* ================================
+   Scenario 3: Early Risk Styles
+   ================================ */
+
+.early-risk-layout {
+  grid-template-columns: 1fr 1.2fr;
+}
+
+.employee-list-section {
+  max-height: calc(100vh - 300px);
+  overflow: hidden;
+}
+
+.employee-list-section .card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.early-risk-list {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 500px;
+}
+
+.early-risk-item {
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.early-risk-item:hover {
+  border-color: #667eea;
+  background: #f7fafc;
+}
+
+.early-risk-item.selected {
+  border-color: #667eea;
+  background: linear-gradient(135deg, #eef2ff 0%, #f0e6ff 100%);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
+
+.risk-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.risk-item-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.risk-item-name {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.risk-item-role {
+  font-size: 0.85rem;
+  color: #718096;
+}
+
+.risk-item-score {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.score-number {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #2d3748;
+}
+
+.risk-item-indicators {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.indicator-chip {
+  font-size: 0.75rem;
+  background: #edf2f7;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  color: #4a5568;
+}
+
+/* Detail panel */
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.detail-header h3 {
+  margin-bottom: 0.25rem;
+}
+
+.detail-role {
+  color: #718096;
+  margin: 0;
+}
+
+.detail-score {
+  text-align: right;
+}
+
+.score-large {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-top: 0.25rem;
+}
+
+.cause-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.cause-tag {
+  background: linear-gradient(135deg, #feb2b2 0%, #fbd38d 100%);
+  color: #744210;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.indicators-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.indicator-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 6px;
+  background: #f7fafc;
+}
+
+.indicator-item.severity-high {
+  background: #fed7d7;
+  border-left: 3px solid #e53e3e;
+}
+
+.indicator-item.severity-medium {
+  background: #fefcbf;
+  border-left: 3px solid #d69e2e;
+}
+
+.indicator-item.severity-low {
+  background: #c6f6d5;
+  border-left: 3px solid #38a169;
+}
+
+.indicator-severity {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  min-width: 60px;
+}
+
+.severity-high .indicator-severity {
+  color: #e53e3e;
+}
+
+.severity-medium .indicator-severity {
+  color: #d69e2e;
+}
+
+.severity-low .indicator-severity {
+  color: #38a169;
+}
+
+.indicator-signal {
+  color: #2d3748;
+}
+
+.interventions-list {
+  list-style: none;
+  padding: 0;
+}
+
+.interventions-list li {
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.interventions-list li:last-child {
+  border-bottom: none;
+}
+
+.interventions-list li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: #667eea;
+  font-weight: bold;
+}
+
+/* ================================
+   Scenario 4: Allocation Styles
+   ================================ */
+
+.allocation-summary {
+  color: #4a5568;
+  margin: 0;
+}
+
+.skill-suggestions {
+  margin-top: 0.5rem;
+}
+
+.allocation-table-container {
+  overflow-x: auto;
+}
+
+.allocation-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.allocation-table th,
+.allocation-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.allocation-table th {
+  background: #f7fafc;
+  font-weight: 600;
+  color: #4a5568;
+  font-size: 0.85rem;
+}
+
+.allocation-table tr:hover {
+  background: #f7fafc;
+}
+
+.rank-number {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  background: #667eea;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.program-name {
+  font-weight: 500;
+}
+
+.priority-score {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.allocation-count {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  background: #e2e8f0;
+  border-radius: 50%;
+  font-weight: 600;
+  color: #718096;
+}
+
+.allocation-count.has-allocation {
+  background: #c6f6d5;
+  color: #22543d;
+}
+
+.reasons-list {
+  list-style: none;
+  padding: 0;
+}
+
+.reasons-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.reasons-list li:last-child {
+  border-bottom: none;
+}
+
+.org-actions-list {
+  list-style: none;
+  padding: 0;
+}
+
+.org-actions-list li {
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #e6fffa 0%, #ebf8ff 100%);
+  border-left: 3px solid #38b2ac;
+  margin-bottom: 0.5rem;
+  border-radius: 0 6px 6px 0;
+}
+
+.form-help {
+  font-size: 0.8rem;
+  color: #718096;
+  margin-top: 0.25rem;
+}
+
+.small-text {
+  font-size: 0.85rem;
+  color: #718096;
+  margin-bottom: 1rem;
+}
+

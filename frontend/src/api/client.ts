@@ -223,3 +223,96 @@ export async function evaluateExpectationBalance(input: ExpectationBalanceInput)
   
   return response.json();
 }
+
+// Scenario 3: Early Risk Types
+export interface RiskIndicator {
+  signal: string;
+  severity: 'low' | 'medium' | 'high';
+}
+
+export interface EarlyRiskResult {
+  employeeId: string;
+  name: string;
+  role: string;
+  earlyRiskScore: number;
+  riskLevel: 'Low' | 'Medium' | 'High';
+  indicators: RiskIndicator[];
+  likelyCauses: string[];
+  recommendedInterventions: string[];
+}
+
+export interface EarlyRiskSummary {
+  employeeId: string;
+  name: string;
+  role: string;
+  earlyRiskScore: number;
+  riskLevel: 'Low' | 'Medium' | 'High';
+  topIndicators: string[];
+}
+
+export interface EarlyRiskListResponse {
+  results: EarlyRiskSummary[];
+}
+
+// Scenario 4: Allocation Types
+export interface AllocationInput {
+  scarceSkill: string;
+  availablePeople: number;
+}
+
+export interface ProgramRanking {
+  programId: string;
+  name: string;
+  department: string;
+  priorityScore: number;
+  reasonSummary: string;
+  suggestedAllocation: number;
+  riskIfUnfilled: 'low' | 'medium' | 'high';
+}
+
+export interface AllocationResult {
+  scarceSkill: string;
+  availablePeople: number;
+  programRankings: ProgramRanking[];
+  orgActions: string[];
+}
+
+// Scenario 3: Get Early Risk List
+export async function getEarlyRiskList(): Promise<EarlyRiskListResponse> {
+  const response = await fetch(`${API_BASE}/scenario/early-risk`);
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new ApiError(error.message || 'Failed to fetch early risk list', error.error || 'UNKNOWN_ERROR');
+  }
+  
+  return response.json();
+}
+
+// Scenario 3: Get Early Risk Detail
+export async function getEarlyRiskDetail(employeeId: string): Promise<EarlyRiskResult> {
+  const response = await fetch(`${API_BASE}/scenario/early-risk/${employeeId}`);
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new ApiError(error.message || 'Failed to fetch early risk detail', error.error || 'UNKNOWN_ERROR');
+  }
+  
+  return response.json();
+}
+
+// Scenario 4: Evaluate Allocation
+export async function evaluateAllocation(input: AllocationInput): Promise<AllocationResult> {
+  const response = await fetch(`${API_BASE}/scenario/allocation`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new ApiError(error.messages?.join(', ') || error.message || 'Failed to evaluate allocation', error.error || 'UNKNOWN_ERROR');
+  }
+  
+  return response.json();
+}

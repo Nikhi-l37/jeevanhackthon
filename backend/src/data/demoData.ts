@@ -1,4 +1,4 @@
-import { Employee, Candidate, Job } from '../store/memoryStore';
+import { Employee, Candidate, Job, Program } from '../store/memoryStore';
 
 // Demo employees with variety for retention risk testing
 export const demoEmployees: Employee[] = [
@@ -12,6 +12,16 @@ export const demoEmployees: Employee[] = [
     promotionsCount: 0, // High risk: long tenure, no promotion
     lastRoleChangeMonths: 36,
     salaryBand: 'medium',
+    // Early Risk fields - burnout risk
+    recentWorkloadLevel: 'high',
+    overtimeHoursLast4Weeks: 25,
+    engagementScore: 3.0,
+    managerCheckinsLastMonth: 1,
+    ptoDaysTakenLast90Days: 0,
+    projectCriticality: 'high',
+    projectEndInDays: 7, // Critical project ending soon
+    recognitionLast60Days: 'low',
+    internalMobilityInterest: 'high',
   },
   {
     id: 'e2',
@@ -23,6 +33,16 @@ export const demoEmployees: Employee[] = [
     promotionsCount: 1,
     lastRoleChangeMonths: 12,
     salaryBand: 'high',
+    // Early Risk fields - low risk, healthy
+    recentWorkloadLevel: 'medium',
+    overtimeHoursLast4Weeks: 5,
+    engagementScore: 4.5,
+    managerCheckinsLastMonth: 4,
+    ptoDaysTakenLast90Days: 5,
+    projectCriticality: 'medium',
+    projectEndInDays: 60,
+    recognitionLast60Days: 'high',
+    internalMobilityInterest: 'low',
   },
   {
     id: 'e3',
@@ -34,17 +54,37 @@ export const demoEmployees: Employee[] = [
     promotionsCount: 0,
     lastRoleChangeMonths: 8,
     salaryBand: 'low', // Low salary risk
+    // Early Risk fields - disengagement risk
+    recentWorkloadLevel: 'low',
+    overtimeHoursLast4Weeks: 2,
+    engagementScore: 2.2,
+    managerCheckinsLastMonth: 0,
+    ptoDaysTakenLast90Days: 1,
+    projectCriticality: 'low',
+    projectEndInDays: 90,
+    recognitionLast60Days: 'low',
+    internalMobilityInterest: 'medium',
   },
   {
     id: 'e4',
     name: 'Person D',
     role: 'Data Scientist',
-    skills: ['python', 'machine learning', 'tensorflow', 'sql', 'statistics'],
+    skills: ['python', 'machine learning', 'tensorflow', 'sql', 'statistics', 'llm', 'genai'],
     tenureMonths: 30,
     performanceScore: 3.8,
     promotionsCount: 0, // Risk: tenure > 24, no promotion
     lastRoleChangeMonths: 24,
     salaryBand: 'medium',
+    // Early Risk fields - post-project exit risk
+    recentWorkloadLevel: 'high',
+    overtimeHoursLast4Weeks: 18,
+    engagementScore: 3.5,
+    managerCheckinsLastMonth: 2,
+    ptoDaysTakenLast90Days: 2,
+    projectCriticality: 'high',
+    projectEndInDays: -5, // Just finished critical project
+    recognitionLast60Days: 'medium',
+    internalMobilityInterest: 'high',
   },
   {
     id: 'e5',
@@ -56,6 +96,16 @@ export const demoEmployees: Employee[] = [
     promotionsCount: 0,
     lastRoleChangeMonths: 12,
     salaryBand: 'high',
+    // Early Risk fields - healthy
+    recentWorkloadLevel: 'medium',
+    overtimeHoursLast4Weeks: 8,
+    engagementScore: 4.0,
+    managerCheckinsLastMonth: 3,
+    ptoDaysTakenLast90Days: 4,
+    projectCriticality: 'medium',
+    projectEndInDays: 45,
+    recognitionLast60Days: 'medium',
+    internalMobilityInterest: 'low',
   },
   {
     id: 'e6',
@@ -67,6 +117,16 @@ export const demoEmployees: Employee[] = [
     promotionsCount: 0,
     lastRoleChangeMonths: 42,
     salaryBand: 'low',
+    // Early Risk fields - severe burnout + disengagement
+    recentWorkloadLevel: 'high',
+    overtimeHoursLast4Weeks: 30,
+    engagementScore: 1.8,
+    managerCheckinsLastMonth: 0,
+    ptoDaysTakenLast90Days: 0,
+    projectCriticality: 'high',
+    projectEndInDays: 10,
+    recognitionLast60Days: 'low',
+    internalMobilityInterest: 'high',
   },
   {
     id: 'e7',
@@ -78,6 +138,16 @@ export const demoEmployees: Employee[] = [
     promotionsCount: 2,
     lastRoleChangeMonths: 6,
     salaryBand: 'high',
+    // Early Risk fields - very healthy
+    recentWorkloadLevel: 'medium',
+    overtimeHoursLast4Weeks: 10,
+    engagementScore: 4.7,
+    managerCheckinsLastMonth: 4,
+    ptoDaysTakenLast90Days: 6,
+    projectCriticality: 'high',
+    projectEndInDays: 30,
+    recognitionLast60Days: 'high',
+    internalMobilityInterest: 'low',
   },
   {
     id: 'e8',
@@ -89,6 +159,16 @@ export const demoEmployees: Employee[] = [
     promotionsCount: 1,
     lastRoleChangeMonths: 20,
     salaryBand: 'medium',
+    // Early Risk fields - moderate risk
+    recentWorkloadLevel: 'medium',
+    overtimeHoursLast4Weeks: 12,
+    engagementScore: 3.2,
+    managerCheckinsLastMonth: 1,
+    ptoDaysTakenLast90Days: 3,
+    projectCriticality: 'medium',
+    projectEndInDays: 20,
+    recognitionLast60Days: 'low',
+    internalMobilityInterest: 'medium',
   },
   {
     id: 'e9',
@@ -100,6 +180,16 @@ export const demoEmployees: Employee[] = [
     promotionsCount: 0,
     lastRoleChangeMonths: 15,
     salaryBand: 'low', // Salary risk
+    // Early Risk fields - burnout warning
+    recentWorkloadLevel: 'high',
+    overtimeHoursLast4Weeks: 22,
+    engagementScore: 2.8,
+    managerCheckinsLastMonth: 1,
+    ptoDaysTakenLast90Days: 1,
+    projectCriticality: 'medium',
+    projectEndInDays: 14,
+    recognitionLast60Days: 'low',
+    internalMobilityInterest: 'high',
   },
   {
     id: 'e10',
@@ -111,6 +201,16 @@ export const demoEmployees: Employee[] = [
     promotionsCount: 0,
     lastRoleChangeMonths: 6,
     salaryBand: 'medium',
+    // Early Risk fields - new hire, healthy
+    recentWorkloadLevel: 'low',
+    overtimeHoursLast4Weeks: 3,
+    engagementScore: 4.3,
+    managerCheckinsLastMonth: 4,
+    ptoDaysTakenLast90Days: 2,
+    projectCriticality: 'low',
+    projectEndInDays: 120,
+    recognitionLast60Days: 'medium',
+    internalMobilityInterest: 'low',
   },
 ];
 
@@ -224,5 +324,69 @@ export const demoJobs: Job[] = [
     department: 'Engineering',
     requiredSkills: ['javascript', 'html', 'css', 'git'],
     level: 'junior',
+  },
+];
+
+// Scenario 4: Demo programs/initiatives for allocation
+export const demoPrograms: Program[] = [
+  {
+    id: 'p1',
+    name: 'GenAI Customer Support Bot',
+    department: 'Customer Experience',
+    requiredSkills: ['llm', 'genai', 'python', 'machine learning'],
+    urgency: 'high',
+    businessImpact: 'high',
+    headcountNeeded: 3,
+    deadlineInWeeks: 4,
+  },
+  {
+    id: 'p2',
+    name: 'Internal Knowledge Search',
+    department: 'Engineering',
+    requiredSkills: ['llm', 'genai', 'vector databases', 'python'],
+    urgency: 'medium',
+    businessImpact: 'medium',
+    headcountNeeded: 2,
+    deadlineInWeeks: 8,
+  },
+  {
+    id: 'p3',
+    name: 'Fraud Detection ML Pipeline',
+    department: 'Risk & Compliance',
+    requiredSkills: ['machine learning', 'python', 'sql', 'spark'],
+    urgency: 'high',
+    businessImpact: 'high',
+    headcountNeeded: 2,
+    deadlineInWeeks: 6,
+  },
+  {
+    id: 'p4',
+    name: 'Personalized Recommendations',
+    department: 'Product',
+    requiredSkills: ['llm', 'genai', 'recommendation systems', 'python'],
+    urgency: 'low',
+    businessImpact: 'high',
+    headcountNeeded: 2,
+    deadlineInWeeks: 12,
+  },
+  {
+    id: 'p5',
+    name: 'Code Review Assistant',
+    department: 'Developer Experience',
+    requiredSkills: ['llm', 'genai', 'typescript', 'ast parsing'],
+    urgency: 'medium',
+    businessImpact: 'medium',
+    headcountNeeded: 1,
+    deadlineInWeeks: 10,
+  },
+  {
+    id: 'p6',
+    name: 'Document Summarization Tool',
+    department: 'Legal',
+    requiredSkills: ['llm', 'genai', 'nlp', 'python'],
+    urgency: 'low',
+    businessImpact: 'low',
+    headcountNeeded: 1,
+    deadlineInWeeks: 16,
   },
 ];

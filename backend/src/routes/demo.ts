@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { loadData, getStore } from '../store/memoryStore';
-import { demoEmployees, demoCandidates, demoJobs } from '../data/demoData';
+import { demoEmployees, demoCandidates, demoJobs, demoPrograms } from '../data/demoData';
 
 const router = Router();
 
@@ -10,7 +10,7 @@ const router = Router();
  */
 router.post('/load', (_req: Request, res: Response) => {
   try {
-    loadData(demoEmployees, demoCandidates, demoJobs);
+    loadData(demoEmployees, demoCandidates, demoJobs, demoPrograms);
     
     const store = getStore();
     
@@ -20,6 +20,7 @@ router.post('/load', (_req: Request, res: Response) => {
         employees: store.employees.length,
         candidates: store.candidates.length,
         jobs: store.jobs.length,
+        programs: store.programs.length,
       },
     });
   } catch (error) {
@@ -45,6 +46,7 @@ router.get('/status', (_req: Request, res: Response) => {
           employees: store.employees.length,
           candidates: store.candidates.length,
           jobs: store.jobs.length,
+          programs: store.programs.length,
         }
       : null,
   });

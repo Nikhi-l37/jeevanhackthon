@@ -8,6 +8,8 @@ import matchRoutes from './routes/match';
 import retentionRoutes from './routes/retention';
 import capabilityRoutes from './routes/capability';
 import expectationsRoutes from './routes/expectations';
+import earlyRiskRoutes from './routes/earlyRisk';
+import allocationRoutes from './routes/allocation';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -35,6 +37,8 @@ app.use('/match', matchRoutes);
 app.use('/retention', retentionRoutes);
 app.use('/scenario', capabilityRoutes);
 app.use('/scenario', expectationsRoutes);
+app.use('/scenario', earlyRiskRoutes);
+app.use('/scenario', allocationRoutes);
 
 // Health check
 app.get('/health', (_req, res) => {
@@ -77,6 +81,10 @@ if (!isProduction) {
         'GET /retention': 'Get retention risk for all employees',
         'POST /scenario/capability-gap': 'Evaluate capability gap sourcing strategy',
         'POST /scenario/expectation-balance': 'Evaluate candidate expectation balance',
+        'GET /scenario/early-risk': 'List employees by early risk score',
+        'GET /scenario/early-risk/:id': 'Get early risk analysis for employee',
+        'POST /scenario/allocation': 'Allocate scarce skills across programs',
+        'GET /scenario/programs': 'List all programs',
         'GET /health': 'Health check',
       },
     });
@@ -112,6 +120,9 @@ Available endpoints:
   GET  /retention/:id          - Get retention risk
   POST /scenario/capability-gap       - Scenario 1: Capability gap
   POST /scenario/expectation-balance  - Scenario 2: Expectation balance
+  GET  /scenario/early-risk           - Scenario 3: Early risk list
+  GET  /scenario/early-risk/:id       - Scenario 3: Early risk detail
+  POST /scenario/allocation           - Scenario 4: Allocation
 
 Frontend should run at http://localhost:5173
   `);
