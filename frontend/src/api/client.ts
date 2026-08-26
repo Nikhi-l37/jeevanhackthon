@@ -1,5 +1,6 @@
-// Use relative URL in production, localhost in development
-const API_BASE = import.meta.env.PROD ? '' : 'http://localhost:4000';
+// Backend API Base URL configured via environment variable
+const RAW_API_URL = import.meta.env.VITE_API_URL;
+const API_BASE = RAW_API_URL ? RAW_API_URL.replace(/\/+$/, '') : 'http://localhost:4000';
 
 // Custom error class for API errors
 export class ApiError extends Error {
@@ -9,6 +10,41 @@ export class ApiError extends Error {
     super(message);
     this.code = code;
     this.name = 'ApiError';
+  }
+}
+
+// Helper to safely parse API error response (handles HTML error pages like 404, 405, 502 gracefully)
+async function parseError(response: Response, defaultMessage: string): Promise<ApiError> {
+  try {
+    const text = await response.text();
+    try {
+      const data = JSON.parse(text);
+      const message =
+        data.messages?.join(', ') || data.message || data.error || defaultMessage;
+      return new ApiError(message, data.error || data.code || 'API_ERROR');
+    } catch {
+      if (response.status === 405) {
+        return new ApiError(
+          `405 Method Not Allowed. The backend server might not be running or routing this request.`,
+          'METHOD_NOT_ALLOWED'
+        );
+      }
+      if (response.status === 404) {
+        return new ApiError(
+          `404 Not Found. The endpoint does not exist on the server.`,
+          'NOT_FOUND'
+        );
+      }
+      return new ApiError(
+        `Server error (${response.status}: ${response.statusText})`,
+        'HTTP_ERROR'
+      );
+    }
+  } catch {
+    return new ApiError(
+      `Network error (${response.status}: ${response.statusText})`,
+      'NETWORK_ERROR'
+    );
   }
 }
 
@@ -80,8 +116,7 @@ export async function loadDemo(): Promise<DemoLoadResponse> {
   });
   
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to load demo data');
+    throw await parseError(response, 'Failed to load demo data');
   }
   
   return response.json();
@@ -91,7 +126,7 @@ export async function getDemoStatus(): Promise<DemoStatus> {
   const response = await fetch(`${API_BASE}/demo/status`);
   
   if (!response.ok) {
-    throw new Error('Failed to get demo status');
+    throw await parseError(response, 'Failed to get demo status');
   }
   
   return response.json();
@@ -101,8 +136,7 @@ export async function getEmployees(): Promise<Employee[]> {
   const response = await fetch(`${API_BASE}/employees`);
   
   if (!response.ok) {
-    const error = await response.json();
-    throw new ApiError(error.message || 'Failed to fetch employees', error.error || 'UNKNOWN_ERROR');
+    throw await parseError(response, 'Failed to fetch employees');
   }
   
   return response.json();
@@ -114,8 +148,7 @@ export async function matchCandidates(query: string): Promise<MatchResponse> {
   );
   
   if (!response.ok) {
-    const error = await response.json();
-    throw new ApiError(error.message || 'Failed to match candidates', error.error || 'UNKNOWN_ERROR');
+    throw await parseError(response, 'Failed to match candidates');
   }
   
   return response.json();
@@ -125,8 +158,7 @@ export async function getRetention(employeeId: string): Promise<RetentionRisk> {
   const response = await fetch(`${API_BASE}/retention/${employeeId}`);
   
   if (!response.ok) {
-    const error = await response.json();
-    throw new ApiError(error.message || 'Failed to fetch retention data', error.error || 'UNKNOWN_ERROR');
+    throw await parseError(response, 'Failed to fetch retention data');
   }
   
   return response.json();
@@ -136,8 +168,7 @@ export async function getAllRetention(): Promise<RetentionRisk[]> {
   const response = await fetch(`${API_BASE}/retention`);
   
   if (!response.ok) {
-    const error = await response.json();
-    throw new ApiError(error.message || 'Failed to fetch retention data', error.error || 'UNKNOWN_ERROR');
+    throw await parseError(response, 'Failed to fetch retention data');
   }
   
   return response.json();
@@ -201,8 +232,7 @@ export async function evaluateCapabilityGap(input: CapabilityGapInput): Promise<
   });
   
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.messages?.join(', ') || error.message || 'Failed to evaluate capability gap');
+    throw await parseError(response, 'Failed to evaluate capability gap');
   }
   
   return response.json();
@@ -217,8 +247,7 @@ export async function evaluateExpectationBalance(input: ExpectationBalanceInput)
   });
   
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.messages?.join(', ') || error.message || 'Failed to evaluate expectation balance');
+    throw await parseError(response, 'Failed to evaluate expectation balance');
   }
   
   return response.json();
@@ -282,8 +311,7 @@ export async function getEarlyRiskList(): Promise<EarlyRiskListResponse> {
   const response = await fetch(`${API_BASE}/scenario/early-risk`);
   
   if (!response.ok) {
-    const error = await response.json();
-    throw new ApiError(error.message || 'Failed to fetch early risk list', error.error || 'UNKNOWN_ERROR');
+    throw await parseError(response, 'Failed to fetch early risk list');
   }
   
   return response.json();
@@ -294,8 +322,7 @@ export async function getEarlyRiskDetail(employeeId: string): Promise<EarlyRiskR
   const response = await fetch(`${API_BASE}/scenario/early-risk/${employeeId}`);
   
   if (!response.ok) {
-    const error = await response.json();
-    throw new ApiError(error.message || 'Failed to fetch early risk detail', error.error || 'UNKNOWN_ERROR');
+    throw await parseError(response, 'Failed to fetch early risk detail');
   }
   
   return response.json();
@@ -310,8 +337,7 @@ export async function evaluateAllocation(input: AllocationInput): Promise<Alloca
   });
   
   if (!response.ok) {
-    const error = await response.json();
-    throw new ApiError(error.messages?.join(', ') || error.message || 'Failed to evaluate allocation', error.error || 'UNKNOWN_ERROR');
+    throw await parseError(response, 'Failed to evaluate allocation');
   }
   
   return response.json();
