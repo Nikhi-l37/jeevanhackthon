@@ -1,55 +1,65 @@
 import { Router, Request, Response } from 'express';
-import { loadData, getStore } from '../store/memoryStore';
-import { demoEmployees, demoCandidates, demoJobs, demoPrograms } from '../data/demoData';
+import prisma from '../db/prisma';
+import { seedDatabase } from '../data/seed';
 
 const router = Router();
 
 /**
  * POST /demo/load
- * Load demo data into memory store
+ * Load demo data into Supabase database via Prisma
  */
-router.post('/load', (_req: Request, res: Response) => {
+router.post('/load', async (_req: Request, res: Response) => {
   try {
-    loadData(demoEmployees, demoCandidates, demoJobs, demoPrograms);
-    
-    const store = getStore();
-    
+    const counts = await seedDatabase();
+
     res.json({
       ok: true,
-      counts: {
-        employees: store.employees.length,
-        candidates: store.candidates.length,
-        jobs: store.jobs.length,
-        programs: store.programs.length,
-      },
+      counts,
     });
   } catch (error) {
-    console.error('Error loading demo data:', error);
+    console.error('Error loading demo data into database:', error);
     res.status(500).json({
       ok: false,
       error: 'Failed to load demo data',
+      message: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });
 
 /**
  * GET /demo/status
- * Check if demo data is loaded
+ * Check if data is populated in the database
  */
-router.get('/status', (_req: Request, res: Response) => {
-  const store = getStore();
-  
-  res.json({
-    loaded: store.loaded,
-    counts: store.loaded
-      ? {
-          employees: store.employees.length,
-          candidates: store.candidates.length,
-          jobs: store.jobs.length,
-          programs: store.programs.length,
-        }
-      : null,
-  });
+router.get('/status', async (_req: Request, res: Response) => {
+  try {
+    const [employees, candidates, jobs, programs] = await Promise.all([
+      prisma.employee.count(),
+      prisma.candidate.count(),
+      prisma.job.count(),
+      prisma.program.count(),
+    ]);
+
+    const loaded = employees > 0;
+
+    res.json({
+      loaded,
+      counts: loaded
+        ? {
+            employees,
+            candidates,
+            jobs,
+            programs,
+          }
+        : null,
+    });
+  } catch (error) {
+    console.error('Error fetching database status:', error);
+    res.status(500).json({
+      loaded: false,
+      counts: null,
+      error: 'Failed to connect to database',
+    });
+  }
 });
 
 export default router;

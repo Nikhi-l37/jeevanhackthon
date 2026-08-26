@@ -1,9 +1,15 @@
 services:
   - type: web
-    name: talent-app
-    runtime: node
-    buildCommand: npm run build
-    startCommand: npm start
+    name: talent-acquisition-app
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: 4000
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false

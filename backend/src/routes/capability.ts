@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { evaluateCapabilityGap, CapabilityGapInput } from '../utils/capabilityDecision';
+import prisma from '../db/prisma';
 
 const router = Router();
 
@@ -7,7 +8,7 @@ const router = Router();
  * POST /scenario/capability-gap
  * Evaluate capability gap and recommend sourcing strategy
  */
-router.post('/capability-gap', (req: Request, res: Response) => {
+router.post('/capability-gap', async (req: Request, res: Response) => {
   const { skill, gapCount, urgency, internalAvailability, budget } = req.body;
 
   // Validate required fields
@@ -54,6 +55,18 @@ router.post('/capability-gap', (req: Request, res: Response) => {
 
   try {
     const result = evaluateCapabilityGap(input);
+
+    // Asynchronously log scenario evaluation to database
+    prisma.scenarioLog
+      .create({
+        data: {
+          scenarioType: 'capability-gap',
+          inputData: JSON.stringify(input),
+          resultData: JSON.stringify(result),
+        },
+      })
+      .catch((err: any) => console.warn('Could not log scenario to database:', err?.message));
+
     res.json(result);
   } catch (error) {
     console.error('Error evaluating capability gap:', error);

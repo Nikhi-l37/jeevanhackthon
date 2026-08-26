@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { evaluateExpectationBalance, ExpectationBalanceInput } from '../utils/expectationDecision';
+import prisma from '../db/prisma';
 
 const router = Router();
 
@@ -7,7 +8,7 @@ const router = Router();
  * POST /scenario/expectation-balance
  * Evaluate candidate expectations vs organizational sustainability
  */
-router.post('/expectation-balance', (req: Request, res: Response) => {
+router.post('/expectation-balance', async (req: Request, res: Response) => {
   const { candidateLevel, compExpectation, promotionExpectation, roleCriticality, orgStabilityNeed } = req.body;
 
   // Validate required fields
@@ -54,6 +55,18 @@ router.post('/expectation-balance', (req: Request, res: Response) => {
 
   try {
     const result = evaluateExpectationBalance(input);
+
+    // Asynchronously log scenario evaluation to database
+    prisma.scenarioLog
+      .create({
+        data: {
+          scenarioType: 'expectation-balance',
+          inputData: JSON.stringify(input),
+          resultData: JSON.stringify(result),
+        },
+      })
+      .catch((err: any) => console.warn('Could not log scenario to database:', err?.message));
+
     res.json(result);
   } catch (error) {
     console.error('Error evaluating expectation balance:', error);

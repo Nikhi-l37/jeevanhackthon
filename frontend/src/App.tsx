@@ -27,7 +27,7 @@ function App() {
   };
 
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className="app">
         <header className="header">
           <h1>🎯 Talent Acquisition & Retention</h1>

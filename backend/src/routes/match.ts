@@ -1,40 +1,49 @@
 import { Router, Request, Response } from 'express';
-import { getStore, isLoaded } from '../store/memoryStore';
+import prisma from '../db/prisma';
 import { matchCandidates } from '../utils/skillMatch';
 
 const router = Router();
 
 /**
  * GET /match?query=...
- * Match candidates by skills query
+ * Match candidates by skills query from Supabase database
  */
-router.get('/', (req: Request, res: Response) => {
-  if (!isLoaded()) {
-    res.status(400).json({
-      ok: false,
-      error: 'DEMO_DATA_NOT_LOADED',
-      message: 'Demo data not loaded',
+router.get('/', async (req: Request, res: Response) => {
+  try {
+    const candidateCount = await prisma.candidate.count();
+    if (candidateCount === 0) {
+      res.status(400).json({
+        ok: false,
+        error: 'DEMO_DATA_NOT_LOADED',
+        message: 'Demo data not loaded. Please load demo data first.',
+      });
+      return;
+    }
+
+    const query = req.query.query as string;
+
+    if (!query || query.trim() === '') {
+      res.status(400).json({
+        error: 'Missing query parameter',
+        message: 'Please provide a query parameter with skills to search, e.g., ?query=react,typescript',
+      });
+      return;
+    }
+
+    const candidates = await prisma.candidate.findMany();
+    const results = matchCandidates(query, candidates, 10);
+
+    res.json({
+      query: query.trim(),
+      results,
     });
-    return;
-  }
-
-  const query = req.query.query as string;
-
-  if (!query || query.trim() === '') {
-    res.status(400).json({
-      error: 'Missing query parameter',
-      message: 'Please provide a query parameter with skills to search, e.g., ?query=react,typescript',
+  } catch (error) {
+    console.error('Error matching candidates:', error);
+    res.status(500).json({
+      error: 'DATABASE_ERROR',
+      message: 'Failed to match candidates from database',
     });
-    return;
   }
-
-  const store = getStore();
-  const results = matchCandidates(query, store.candidates, 10);
-
-  res.json({
-    query: query.trim(),
-    results,
-  });
 });
 
 export default router;
