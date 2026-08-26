@@ -1,6 +1,5 @@
-// Backend API Base URL configured via environment variable
-const RAW_API_URL = import.meta.env.VITE_API_URL;
-const API_BASE = RAW_API_URL ? RAW_API_URL.replace(/\/+$/, '') : 'http://localhost:4000';
+// Backend API Base URL configured via VITE_ environment variable
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000').replace(/\/+$/, '');
 
 // Custom error class for API errors
 export class ApiError extends Error {
@@ -110,7 +109,7 @@ export interface DemoStatus {
 
 // API Functions
 export async function loadDemo(): Promise<DemoLoadResponse> {
-  const response = await fetch(`${API_BASE}/demo/load`, {
+  const response = await fetch(`${API_URL}/demo/load`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
   });
@@ -123,7 +122,7 @@ export async function loadDemo(): Promise<DemoLoadResponse> {
 }
 
 export async function getDemoStatus(): Promise<DemoStatus> {
-  const response = await fetch(`${API_BASE}/demo/status`);
+  const response = await fetch(`${API_URL}/demo/status`);
   
   if (!response.ok) {
     throw await parseError(response, 'Failed to get demo status');
@@ -133,7 +132,7 @@ export async function getDemoStatus(): Promise<DemoStatus> {
 }
 
 export async function getEmployees(): Promise<Employee[]> {
-  const response = await fetch(`${API_BASE}/employees`);
+  const response = await fetch(`${API_URL}/employees`);
   
   if (!response.ok) {
     throw await parseError(response, 'Failed to fetch employees');
@@ -144,7 +143,7 @@ export async function getEmployees(): Promise<Employee[]> {
 
 export async function matchCandidates(query: string): Promise<MatchResponse> {
   const response = await fetch(
-    `${API_BASE}/match?query=${encodeURIComponent(query)}`
+    `${API_URL}/match?query=${encodeURIComponent(query)}`
   );
   
   if (!response.ok) {
@@ -155,7 +154,7 @@ export async function matchCandidates(query: string): Promise<MatchResponse> {
 }
 
 export async function getRetention(employeeId: string): Promise<RetentionRisk> {
-  const response = await fetch(`${API_BASE}/retention/${employeeId}`);
+  const response = await fetch(`${API_URL}/retention/${employeeId}`);
   
   if (!response.ok) {
     throw await parseError(response, 'Failed to fetch retention data');
@@ -165,7 +164,7 @@ export async function getRetention(employeeId: string): Promise<RetentionRisk> {
 }
 
 export async function getAllRetention(): Promise<RetentionRisk[]> {
-  const response = await fetch(`${API_BASE}/retention`);
+  const response = await fetch(`${API_URL}/retention`);
   
   if (!response.ok) {
     throw await parseError(response, 'Failed to fetch retention data');
@@ -225,7 +224,7 @@ export interface ExpectationBalanceResult {
 
 // Scenario 1: Evaluate Capability Gap
 export async function evaluateCapabilityGap(input: CapabilityGapInput): Promise<CapabilityGapResult> {
-  const response = await fetch(`${API_BASE}/scenario/capability-gap`, {
+  const response = await fetch(`${API_URL}/scenario/capability-gap`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
@@ -240,7 +239,7 @@ export async function evaluateCapabilityGap(input: CapabilityGapInput): Promise<
 
 // Scenario 2: Evaluate Expectation Balance
 export async function evaluateExpectationBalance(input: ExpectationBalanceInput): Promise<ExpectationBalanceResult> {
-  const response = await fetch(`${API_BASE}/scenario/expectation-balance`, {
+  const response = await fetch(`${API_URL}/scenario/expectation-balance`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
@@ -308,7 +307,7 @@ export interface AllocationResult {
 
 // Scenario 3: Get Early Risk List
 export async function getEarlyRiskList(): Promise<EarlyRiskListResponse> {
-  const response = await fetch(`${API_BASE}/scenario/early-risk`);
+  const response = await fetch(`${API_URL}/scenario/early-risk`);
   
   if (!response.ok) {
     throw await parseError(response, 'Failed to fetch early risk list');
@@ -319,7 +318,7 @@ export async function getEarlyRiskList(): Promise<EarlyRiskListResponse> {
 
 // Scenario 3: Get Early Risk Detail
 export async function getEarlyRiskDetail(employeeId: string): Promise<EarlyRiskResult> {
-  const response = await fetch(`${API_BASE}/scenario/early-risk/${employeeId}`);
+  const response = await fetch(`${API_URL}/scenario/early-risk/${employeeId}`);
   
   if (!response.ok) {
     throw await parseError(response, 'Failed to fetch early risk detail');
@@ -330,7 +329,7 @@ export async function getEarlyRiskDetail(employeeId: string): Promise<EarlyRiskR
 
 // Scenario 4: Evaluate Allocation
 export async function evaluateAllocation(input: AllocationInput): Promise<AllocationResult> {
-  const response = await fetch(`${API_BASE}/scenario/allocation`, {
+  const response = await fetch(`${API_URL}/scenario/allocation`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
