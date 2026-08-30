@@ -47,6 +47,41 @@ async function parseError(response: Response, defaultMessage: string): Promise<A
   }
 }
 
+// Safe fetch wrapper that handles network failures, HTML responses, and JSON parsing gracefully
+async function fetchJson<T>(url: string, options?: RequestInit, defaultErrorMessage = 'Request failed'): Promise<T> {
+  let response: Response;
+  try {
+    response = await fetch(url, options);
+  } catch {
+    throw new ApiError(
+      `Cannot connect to backend server at "${API_URL}". Please ensure your backend server is running.`,
+      'NETWORK_ERROR'
+    );
+  }
+
+  const contentType = response.headers.get('content-type') || '';
+
+  if (!response.ok) {
+    throw await parseError(response, defaultErrorMessage);
+  }
+
+  if (contentType.includes('text/html')) {
+    throw new ApiError(
+      `Received HTML instead of JSON from "${url}". Please ensure VITE_API_URL points to your Express backend port (e.g., http://localhost:4000).`,
+      'INVALID_CONTENT_TYPE'
+    );
+  }
+
+  try {
+    return await response.json();
+  } catch {
+    throw new ApiError(
+      `Invalid JSON response from server at "${url}".`,
+      'INVALID_JSON'
+    );
+  }
+}
+
 // Helper to detect DEMO_DATA_NOT_LOADED error
 export function isDemoDataNotLoaded(error: unknown): boolean {
   return error instanceof ApiError && error.code === 'DEMO_DATA_NOT_LOADED';
@@ -111,68 +146,54 @@ export interface DemoStatus {
 
 // API Functions
 export async function loadDemo(): Promise<DemoLoadResponse> {
-  const response = await fetch(`${API_URL}/demo/load`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-  });
-  
-  if (!response.ok) {
-    throw await parseError(response, 'Failed to load demo data');
-  }
-  
-  return response.json();
+  return fetchJson<DemoLoadResponse>(
+    `${API_URL}/demo/load`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    },
+    'Failed to load demo data'
+  );
 }
 
 export async function getDemoStatus(): Promise<DemoStatus> {
-  const response = await fetch(`${API_URL}/demo/status`);
-  
-  if (!response.ok) {
-    throw await parseError(response, 'Failed to get demo status');
-  }
-  
-  return response.json();
+  return fetchJson<DemoStatus>(
+    `${API_URL}/demo/status`,
+    undefined,
+    'Failed to get demo status'
+  );
 }
 
 export async function getEmployees(): Promise<Employee[]> {
-  const response = await fetch(`${API_URL}/employees`);
-  
-  if (!response.ok) {
-    throw await parseError(response, 'Failed to fetch employees');
-  }
-  
-  return response.json();
+  return fetchJson<Employee[]>(
+    `${API_URL}/employees`,
+    undefined,
+    'Failed to fetch employees'
+  );
 }
 
 export async function matchCandidates(query: string): Promise<MatchResponse> {
-  const response = await fetch(
-    `${API_URL}/match?query=${encodeURIComponent(query)}`
+  return fetchJson<MatchResponse>(
+    `${API_URL}/match?query=${encodeURIComponent(query)}`,
+    undefined,
+    'Failed to match candidates'
   );
-  
-  if (!response.ok) {
-    throw await parseError(response, 'Failed to match candidates');
-  }
-  
-  return response.json();
 }
 
 export async function getRetention(employeeId: string): Promise<RetentionRisk> {
-  const response = await fetch(`${API_URL}/retention/${employeeId}`);
-  
-  if (!response.ok) {
-    throw await parseError(response, 'Failed to fetch retention data');
-  }
-  
-  return response.json();
+  return fetchJson<RetentionRisk>(
+    `${API_URL}/retention/${employeeId}`,
+    undefined,
+    'Failed to fetch retention data'
+  );
 }
 
 export async function getAllRetention(): Promise<RetentionRisk[]> {
-  const response = await fetch(`${API_URL}/retention`);
-  
-  if (!response.ok) {
-    throw await parseError(response, 'Failed to fetch retention data');
-  }
-  
-  return response.json();
+  return fetchJson<RetentionRisk[]>(
+    `${API_URL}/retention`,
+    undefined,
+    'Failed to fetch retention data'
+  );
 }
 
 // Scenario 1: Capability Gap Types
@@ -226,32 +247,28 @@ export interface ExpectationBalanceResult {
 
 // Scenario 1: Evaluate Capability Gap
 export async function evaluateCapabilityGap(input: CapabilityGapInput): Promise<CapabilityGapResult> {
-  const response = await fetch(`${API_URL}/scenario/capability-gap`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
-  
-  if (!response.ok) {
-    throw await parseError(response, 'Failed to evaluate capability gap');
-  }
-  
-  return response.json();
+  return fetchJson<CapabilityGapResult>(
+    `${API_URL}/scenario/capability-gap`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    },
+    'Failed to evaluate capability gap'
+  );
 }
 
 // Scenario 2: Evaluate Expectation Balance
 export async function evaluateExpectationBalance(input: ExpectationBalanceInput): Promise<ExpectationBalanceResult> {
-  const response = await fetch(`${API_URL}/scenario/expectation-balance`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
-  
-  if (!response.ok) {
-    throw await parseError(response, 'Failed to evaluate expectation balance');
-  }
-  
-  return response.json();
+  return fetchJson<ExpectationBalanceResult>(
+    `${API_URL}/scenario/expectation-balance`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    },
+    'Failed to evaluate expectation balance'
+  );
 }
 
 // Scenario 3: Early Risk Types
@@ -309,37 +326,31 @@ export interface AllocationResult {
 
 // Scenario 3: Get Early Risk List
 export async function getEarlyRiskList(): Promise<EarlyRiskListResponse> {
-  const response = await fetch(`${API_URL}/scenario/early-risk`);
-  
-  if (!response.ok) {
-    throw await parseError(response, 'Failed to fetch early risk list');
-  }
-  
-  return response.json();
+  return fetchJson<EarlyRiskListResponse>(
+    `${API_URL}/scenario/early-risk`,
+    undefined,
+    'Failed to fetch early risk list'
+  );
 }
 
 // Scenario 3: Get Early Risk Detail
 export async function getEarlyRiskDetail(employeeId: string): Promise<EarlyRiskResult> {
-  const response = await fetch(`${API_URL}/scenario/early-risk/${employeeId}`);
-  
-  if (!response.ok) {
-    throw await parseError(response, 'Failed to fetch early risk detail');
-  }
-  
-  return response.json();
+  return fetchJson<EarlyRiskResult>(
+    `${API_URL}/scenario/early-risk/${employeeId}`,
+    undefined,
+    'Failed to fetch early risk detail'
+  );
 }
 
 // Scenario 4: Evaluate Allocation
 export async function evaluateAllocation(input: AllocationInput): Promise<AllocationResult> {
-  const response = await fetch(`${API_URL}/scenario/allocation`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
-  
-  if (!response.ok) {
-    throw await parseError(response, 'Failed to evaluate allocation');
-  }
-  
-  return response.json();
+  return fetchJson<AllocationResult>(
+    `${API_URL}/scenario/allocation`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    },
+    'Failed to evaluate allocation'
+  );
 }
