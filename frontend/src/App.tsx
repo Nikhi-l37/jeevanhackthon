@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Match from './pages/Match';
 import Retention from './pages/Retention';
@@ -32,13 +32,13 @@ function App() {
         <header className="header">
           <h1>🎯 Talent Acquisition & Retention</h1>
           <nav>
-            <Link to="/">Dashboard</Link>
-            <Link to="/match">Match</Link>
-            <Link to="/retention">Retention</Link>
-            <Link to="/capability-gap">Scenario 1</Link>
-            <Link to="/expectation-balance">Scenario 2</Link>
-            <Link to="/early-risk">Scenario 3</Link>
-            <Link to="/allocation">Scenario 4</Link>
+            <NavLink to="/" end>Dashboard</NavLink>
+            <NavLink to="/match">Match</NavLink>
+            <NavLink to="/retention">Retention</NavLink>
+            <NavLink to="/capability-gap">Scenario 1</NavLink>
+            <NavLink to="/expectation-balance">Scenario 2</NavLink>
+            <NavLink to="/early-risk">Scenario 3</NavLink>
+            <NavLink to="/allocation">Scenario 4</NavLink>
             <button 
               onClick={handleLoadDemo} 
               disabled={demoLoading}

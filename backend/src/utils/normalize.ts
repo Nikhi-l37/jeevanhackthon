@@ -17,8 +17,14 @@ export function normalizeToken(token: string): string {
  * Filters out empty tokens
  */
 export function parseQueryTokens(query: string): string[] {
-  const tokens = query
-    .split(/[,;\s]+/)
+  let rawTokens: string[];
+  if (query.includes(',') || query.includes(';')) {
+    rawTokens = query.split(/[,;]+/);
+  } else {
+    rawTokens = query.split(/\s+/);
+  }
+
+  const tokens = rawTokens
     .map(normalizeToken)
     .filter((t) => t.length > 0);
   

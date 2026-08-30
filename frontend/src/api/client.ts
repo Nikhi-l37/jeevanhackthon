@@ -95,6 +95,7 @@ export interface DemoLoadResponse {
     employees: number;
     candidates: number;
     jobs: number;
+    programs?: number;
   };
 }
 
@@ -104,6 +105,7 @@ export interface DemoStatus {
     employees: number;
     candidates: number;
     jobs: number;
+    programs?: number;
   } | null;
 }
 

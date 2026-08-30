@@ -40,38 +40,54 @@ function Dashboard() {
 
   return (
     <div className="dashboard">
-      <h2>Welcome to Digital Talent Experience</h2>
+      <h2>🎯 Digital Talent Acquisition & Retention Platform</h2>
+      <p className="subtitle">
+        Intelligent candidate matching, retention risk analysis, strategic capability gap decisions, and talent allocation.
+      </p>
       
       <div className="card">
-        <h3>🚀 Quick Start</h3>
+        <h3>🚀 System & Database Status</h3>
         
         {!status?.loaded ? (
           <div className="load-section">
-            <p>Load demo data to get started with the prototype.</p>
+            <p>Database is empty or uninitialized. Load the demo dataset to get started.</p>
             <button 
               onClick={handleLoadDemo} 
               disabled={loading}
               className="btn btn-primary"
             >
-              {loading ? 'Loading...' : 'Load Demo Data'}
+              {loading ? '⏳ Loading Dataset...' : '📦 Load Demo Dataset'}
             </button>
             {error && <p className="error">{error}</p>}
           </div>
         ) : (
           <div className="status-section">
-            <p className="success">✅ Demo data loaded successfully!</p>
+            <div className="status-header">
+              <p className="success">✅ Supabase PostgreSQL Database Connected & Populated</p>
+              <button 
+                onClick={handleLoadDemo} 
+                disabled={loading}
+                className="btn btn-secondary btn-sm"
+              >
+                {loading ? 'Refreshing...' : '🔄 Reload Demo Data'}
+              </button>
+            </div>
             <div className="counts">
               <div className="count-item">
-                <span className="count-number">{status.counts?.employees}</span>
+                <span className="count-number">{status.counts?.employees ?? 0}</span>
                 <span className="count-label">Employees</span>
               </div>
               <div className="count-item">
-                <span className="count-number">{status.counts?.candidates}</span>
+                <span className="count-number">{status.counts?.candidates ?? 0}</span>
                 <span className="count-label">Candidates</span>
               </div>
               <div className="count-item">
-                <span className="count-number">{status.counts?.jobs}</span>
-                <span className="count-label">Jobs</span>
+                <span className="count-number">{status.counts?.jobs ?? 0}</span>
+                <span className="count-label">Open Jobs</span>
+              </div>
+              <div className="count-item">
+                <span className="count-number">{status.counts?.programs ?? 6}</span>
+                <span className="count-label">Strategic Programs</span>
               </div>
             </div>
           </div>
@@ -81,11 +97,11 @@ function Dashboard() {
       <div className="features">
         <div className="card feature-card">
           <h3>🔍 Candidate Matching</h3>
-          <p>Search candidates by skills with transparent scoring.</p>
+          <p>Search candidates by skill requirements with transparent overlap scoring.</p>
           <ul>
-            <li>Enter skills to search</li>
-            <li>View match scores (0-100)</li>
-            <li>See which skills matched</li>
+            <li>Multi-skill query matching</li>
+            <li>Match score calculation (0-100%)</li>
+            <li>Matched skills highlighting</li>
           </ul>
           <Link to="/match" className="btn btn-secondary">
             Try Matching →
@@ -93,30 +109,75 @@ function Dashboard() {
         </div>
 
         <div className="card feature-card">
-          <h3>📊 Retention Analysis</h3>
-          <p>Analyze employee retention risk with actionable insights.</p>
+          <h3>📊 Retention Risk Analysis</h3>
+          <p>Analyze employee retention flight risk with actionable HR recommendations.</p>
           <ul>
-            <li>Rule-based risk scoring</li>
-            <li>Clear risk reasons</li>
-            <li>Recommended actions</li>
+            <li>Rule-based risk scoring & tiers</li>
+            <li>Stagnation, tenure & comp drivers</li>
+            <li>Targeted retention actions</li>
           </ul>
           <Link to="/retention" className="btn btn-secondary">
             View Analysis →
           </Link>
         </div>
+
+        <div className="card feature-card">
+          <h3>🎯 Scenario 1: Capability Gap</h3>
+          <p>Decide whether to hire externally, upskill internally, redesign roles, or contract.</p>
+          <ul>
+            <li>Multi-factor strategy scoring</li>
+            <li>Timeline & budget trade-offs</li>
+            <li>Concrete next-step roadmap</li>
+          </ul>
+          <Link to="/capability-gap" className="btn btn-secondary">
+            Analyze Gap →
+          </Link>
+        </div>
+
+        <div className="card feature-card">
+          <h3>⚖️ Scenario 2: Expectation Balance</h3>
+          <p>Balance candidate salary & progression expectations with org sustainability.</p>
+          <ul>
+            <li>Tiered offer guidance (Comp/Equity)</li>
+            <li>Flight risk early flags</li>
+            <li>Long-term retention levers</li>
+          </ul>
+          <Link to="/expectation-balance" className="btn btn-secondary">
+            Evaluate Balance →
+          </Link>
+        </div>
+
+        <div className="card feature-card">
+          <h3>🚨 Scenario 3: Early Risk Detection</h3>
+          <p>Detect early disengagement and burnout signals before employees resign.</p>
+          <ul>
+            <li>Overtime & workload monitoring</li>
+            <li>1:1 check-ins & PTO indicators</li>
+            <li>Manager intervention guidance</li>
+          </ul>
+          <Link to="/early-risk" className="btn btn-secondary">
+            View Early Signals →
+          </Link>
+        </div>
+
+        <div className="card feature-card">
+          <h3>🔀 Scenario 4: Talent Allocation</h3>
+          <p>Optimize and prioritize scarce critical skillsets across competing programs.</p>
+          <ul>
+            <li>Business impact & urgency ranking</li>
+            <li>Headcount deficit suggestions</li>
+            <li>Org risk mitigation steps</li>
+          </ul>
+          <Link to="/allocation" className="btn btn-secondary">
+            Allocate Skills →
+          </Link>
+        </div>
       </div>
 
       <div className="card info-card">
-        <h3>ℹ️ About This Prototype</h3>
+        <h3>ℹ️ Architecture & Capabilities</h3>
         <p>
-          This hackathon prototype demonstrates simple, explainable approaches to:
-        </p>
-        <ul>
-          <li><strong>Talent Acquisition:</strong> Skill-overlap ranking for candidate matching</li>
-          <li><strong>Retention:</strong> Rule-based risk scoring with transparent reasons</li>
-        </ul>
-        <p className="note">
-          Note: Uses in-memory storage. Data resets when server restarts.
+          This system is built with <strong>React (Vite + TypeScript)</strong>, <strong>Node.js (Express + TypeScript)</strong>, and <strong>Supabase (PostgreSQL with Prisma ORM)</strong> for production-grade persistence and fast scenario modeling.
         </p>
       </div>
     </div>

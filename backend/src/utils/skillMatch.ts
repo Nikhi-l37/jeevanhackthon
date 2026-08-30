@@ -37,7 +37,10 @@ export function calculateSkillMatch(
     if (match) {
       // Return the original skill name for display
       const originalIndex = normalizedCandidateSkills.indexOf(match);
-      matchedSkills.push(candidateSkills[originalIndex]);
+      const skillName = candidateSkills[originalIndex];
+      if (!matchedSkills.includes(skillName)) {
+        matchedSkills.push(skillName);
+      }
     }
   }
 
