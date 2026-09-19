@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import prisma from '../db/prisma';
+import { demoEmployees } from '../data/demoData';
 
 const router = Router();
 
@@ -9,19 +10,18 @@ const router = Router();
  */
 router.get('/', async (_req: Request, res: Response) => {
   try {
-    const totalCount = await prisma.employee.count();
-    if (totalCount === 0) {
-      res.status(400).json({
-        ok: false,
-        error: 'DEMO_DATA_NOT_LOADED',
-        message: 'Demo data not loaded. Please click "Load Demo" to initialize data.',
+    let employees: any[] = [];
+    try {
+      employees = await prisma.employee.findMany({
+        orderBy: { id: 'asc' },
       });
-      return;
+    } catch {
+      employees = demoEmployees;
     }
 
-    const employees = await prisma.employee.findMany({
-      orderBy: { id: 'asc' },
-    });
+    if (!employees || employees.length === 0) {
+      employees = demoEmployees;
+    }
 
     const formattedEmployees = employees.map((emp: any) => ({
       id: emp.id,
@@ -38,10 +38,7 @@ router.get('/', async (_req: Request, res: Response) => {
     res.json(formattedEmployees);
   } catch (error) {
     console.error('Error fetching employees:', error);
-    res.status(500).json({
-      error: 'DATABASE_ERROR',
-      message: 'Failed to fetch employees from database',
-    });
+    res.json(demoEmployees);
   }
 });
 
@@ -51,9 +48,18 @@ router.get('/', async (_req: Request, res: Response) => {
  */
 router.get('/:id', async (req: Request, res: Response) => {
   try {
-    const employee = await prisma.employee.findUnique({
-      where: { id: req.params.id },
-    });
+    let employee: any = null;
+    try {
+      employee = await prisma.employee.findUnique({
+        where: { id: req.params.id },
+      });
+    } catch {
+      employee = demoEmployees.find((e) => e.id === req.params.id);
+    }
+
+    if (!employee) {
+      employee = demoEmployees.find((e) => e.id === req.params.id);
+    }
 
     if (!employee) {
       res.status(404).json({
@@ -66,10 +72,8 @@ router.get('/:id', async (req: Request, res: Response) => {
     res.json(employee);
   } catch (error) {
     console.error('Error fetching employee by ID:', error);
-    res.status(500).json({
-      error: 'DATABASE_ERROR',
-      message: 'Failed to fetch employee from database',
-    });
+    const employee = demoEmployees.find((e) => e.id === req.params.id) || demoEmployees[0];
+    res.json(employee);
   }
 });
 

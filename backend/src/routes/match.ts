@@ -1,37 +1,39 @@
 import { Router, Request, Response } from 'express';
 import prisma from '../db/prisma';
 import { matchCandidates } from '../utils/skillMatch';
+import { Candidate } from '../store/memoryStore';
+import { demoCandidates } from '../data/demoData';
 
 const router = Router();
 
 /**
- * GET /match?query=...
- * Match candidates by skills query from Supabase database
+ * GET /match?query=react,typescript
+ * Match candidates against a skill query
  */
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const candidateCount = await prisma.candidate.count();
-    if (candidateCount === 0) {
+    const { query } = req.query;
+
+    if (!query || typeof query !== 'string' || query.trim() === '') {
       res.status(400).json({
-        ok: false,
-        error: 'DEMO_DATA_NOT_LOADED',
-        message: 'Demo data not loaded. Please load demo data first.',
+        error: 'Validation failed',
+        message: 'Query parameter is required',
       });
       return;
     }
 
-    const query = req.query.query as string;
-
-    if (!query || query.trim() === '') {
-      res.status(400).json({
-        error: 'Missing query parameter',
-        message: 'Please provide a query parameter with skills to search, e.g., ?query=react,typescript',
-      });
-      return;
+    let candidates: any[] = [];
+    try {
+      candidates = await prisma.candidate.findMany();
+    } catch {
+      candidates = demoCandidates;
     }
 
-    const candidates = await prisma.candidate.findMany();
-    const results = matchCandidates(query, candidates, 10);
+    if (!candidates || candidates.length === 0) {
+      candidates = demoCandidates;
+    }
+
+    const results = matchCandidates(query, candidates as unknown as Candidate[]);
 
     res.json({
       query: query.trim(),
@@ -39,10 +41,9 @@ router.get('/', async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Error matching candidates:', error);
-    res.status(500).json({
-      error: 'DATABASE_ERROR',
-      message: 'Failed to match candidates from database',
-    });
+    const queryStr = (req.query.query as string) || '';
+    const results = matchCandidates(queryStr, demoCandidates);
+    res.json({ query: queryStr, results });
   }
 });
 

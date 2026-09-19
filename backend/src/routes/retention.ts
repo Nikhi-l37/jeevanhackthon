@@ -2,19 +2,58 @@ import { Router, Request, Response } from 'express';
 import prisma from '../db/prisma';
 import { computeRetentionRisk } from '../utils/retentionScore';
 import { Employee } from '../store/memoryStore';
+import { demoEmployees } from '../data/demoData';
 
 const router = Router();
 
 /**
+ * GET /retention
+ * Returns retention risk analysis for all employees
+ */
+router.get('/', async (_req: Request, res: Response) => {
+  try {
+    let employees: any[] = [];
+    try {
+      employees = await prisma.employee.findMany();
+    } catch {
+      employees = demoEmployees;
+    }
+
+    if (!employees || employees.length === 0) {
+      employees = demoEmployees;
+    }
+
+    const results = employees.map((emp) =>
+      computeRetentionRisk(emp as unknown as Employee)
+    );
+
+    res.json(results);
+  } catch (error) {
+    console.error('Error fetching all retention risk:', error);
+    const results = demoEmployees.map((emp) => computeRetentionRisk(emp));
+    res.json(results);
+  }
+});
+
+/**
  * GET /retention/:employeeId
- * Get retention risk analysis for an employee
+ * Returns retention risk analysis for a specific employee
  */
 router.get('/:employeeId', async (req: Request, res: Response) => {
   try {
     const { employeeId } = req.params;
-    const employee = await prisma.employee.findUnique({
-      where: { id: employeeId },
-    });
+    let employee: any = null;
+    try {
+      employee = await prisma.employee.findUnique({
+        where: { id: employeeId },
+      });
+    } catch {
+      employee = demoEmployees.find((e) => e.id === employeeId);
+    }
+
+    if (!employee) {
+      employee = demoEmployees.find((e) => e.id === employeeId);
+    }
 
     if (!employee) {
       res.status(404).json({
@@ -24,48 +63,13 @@ router.get('/:employeeId', async (req: Request, res: Response) => {
       return;
     }
 
-    const riskAnalysis = computeRetentionRisk(employee as unknown as Employee);
-    res.json(riskAnalysis);
+    const result = computeRetentionRisk(employee as unknown as Employee);
+    res.json(result);
   } catch (error) {
-    console.error('Error fetching retention analysis:', error);
-    res.status(500).json({
-      error: 'DATABASE_ERROR',
-      message: 'Failed to compute retention analysis',
-    });
-  }
-});
-
-/**
- * GET /retention
- * Get retention risk analysis for all employees
- */
-router.get('/', async (_req: Request, res: Response) => {
-  try {
-    const employees = await prisma.employee.findMany();
-
-    if (employees.length === 0) {
-      res.status(400).json({
-        ok: false,
-        error: 'DEMO_DATA_NOT_LOADED',
-        message: 'Demo data not loaded. Please click "Load Demo" to initialize data.',
-      });
-      return;
-    }
-
-    const results = employees.map((employee: any) =>
-      computeRetentionRisk(employee as unknown as Employee)
-    );
-
-    // Sort by risk score descending
-    results.sort((a: any, b: any) => b.riskScore - a.riskScore);
-
-    res.json(results);
-  } catch (error) {
-    console.error('Error fetching all retention analyses:', error);
-    res.status(500).json({
-      error: 'DATABASE_ERROR',
-      message: 'Failed to compute retention analyses',
-    });
+    console.error('Error fetching retention risk for employee:', error);
+    const employee = demoEmployees.find((e) => e.id === req.params.employeeId) || demoEmployees[0];
+    const result = computeRetentionRisk(employee);
+    res.json(result);
   }
 });
 

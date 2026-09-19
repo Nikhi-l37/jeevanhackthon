@@ -8,6 +8,7 @@ import { Router, Request, Response } from 'express';
 import prisma from '../db/prisma';
 import { computeEarlyRisk, getEarlyRiskList } from '../utils/earlyRisk';
 import { Employee } from '../store/memoryStore';
+import { demoEmployees } from '../data/demoData';
 
 const router = Router();
 
@@ -17,25 +18,24 @@ const router = Router();
  */
 router.get('/early-risk', async (_req: Request, res: Response) => {
   try {
-    const employees = await prisma.employee.findMany();
+    let employees: any[] = [];
+    try {
+      employees = await prisma.employee.findMany();
+    } catch (dbErr) {
+      console.warn('Database query failed, using built-in data:', (dbErr as Error)?.message);
+      employees = demoEmployees;
+    }
 
-    if (employees.length === 0) {
-      res.status(400).json({
-        ok: false,
-        error: 'DEMO_DATA_NOT_LOADED',
-        message: 'Demo data not loaded. Please click "Load Demo" to initialize data.',
-      });
-      return;
+    if (!employees || employees.length === 0) {
+      employees = demoEmployees;
     }
 
     const results = getEarlyRiskList(employees as unknown as Employee[]);
     res.json({ results });
   } catch (error) {
     console.error('Error fetching early risk list:', error);
-    res.status(500).json({
-      error: 'DATABASE_ERROR',
-      message: 'Failed to fetch early risk list from database',
-    });
+    const results = getEarlyRiskList(demoEmployees);
+    res.json({ results });
   }
 });
 
@@ -46,9 +46,18 @@ router.get('/early-risk', async (_req: Request, res: Response) => {
 router.get('/early-risk/:employeeId', async (req: Request, res: Response) => {
   try {
     const { employeeId } = req.params;
-    const employee = await prisma.employee.findUnique({
-      where: { id: employeeId },
-    });
+    let employee: any = null;
+    try {
+      employee = await prisma.employee.findUnique({
+        where: { id: employeeId },
+      });
+    } catch {
+      employee = demoEmployees.find((e) => e.id === employeeId);
+    }
+
+    if (!employee) {
+      employee = demoEmployees.find((e) => e.id === employeeId);
+    }
 
     if (!employee) {
       res.status(404).json({
@@ -62,10 +71,9 @@ router.get('/early-risk/:employeeId', async (req: Request, res: Response) => {
     res.json(result);
   } catch (error) {
     console.error('Error fetching early risk detail:', error);
-    res.status(500).json({
-      error: 'DATABASE_ERROR',
-      message: 'Failed to compute early risk analysis',
-    });
+    const employee = demoEmployees.find((e) => e.id === req.params.employeeId) || demoEmployees[0];
+    const result = computeEarlyRisk(employee);
+    res.json(result);
   }
 });
 

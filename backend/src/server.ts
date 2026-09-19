@@ -26,6 +26,15 @@ app.use(cors({
 
 app.use(express.json());
 
+// Normalize custom hosting sub-paths if passed (e.g. /service/1ea20d22/scenario -> /scenario)
+app.use((req, _res, next) => {
+  const match = req.url.match(/^\/service\/[a-zA-Z0-9_-]+(\/.*)?$/);
+  if (match) {
+    req.url = match[1] || '/';
+  }
+  next();
+});
+
 // Request logging for development
 app.use((req, _res, next) => {
   console.log(`${new Date().toISOString()} ${req.method} ${req.path}`);
